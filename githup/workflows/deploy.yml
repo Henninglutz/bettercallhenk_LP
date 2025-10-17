@@ -1,0 +1,47 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add VPS to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.VPS_PORT || 22 }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Rsync files to VPS
+        uses: easingthemes/ssh-deploy@v5.0.3
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.VPS_HOST }}
+          REMOTE_USER: ${{ secrets.VPS_USER }}
+          REMOTE_PORT: ${{ secrets.VPS_PORT || 22 }}
+          SOURCE: "./"
+          TARGET: "/var/www/bettercallhenk"
+          ARGS: "-avz --delete --exclude='.git' --exclude='.github'"
+
+      - name: Build venv, install deps, restart service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+            APP_DIR=/var/www/bettercallhenk
+            if [ ! -x "$APP_DIR/venv/bin/python" ]; then
+              python3 -m venv "$APP_DIR/venv"
+            fi
+            source "$APP_DIR/venv/bin/activate"
+            if [ -f "$APP_DIR/requirements.txt" ]; then
+              pip install -r "$APP_DIR/requirements.txt"
+            fi
+            sudo systemctl restart henk
