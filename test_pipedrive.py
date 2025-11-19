@@ -96,7 +96,6 @@ def test_pipedrive_connection():
     test_lead_data = {
         'title': 'TEST - Beta Anmeldung: Test User',
         'person_id': person_id,
-        'note': 'Use Case: TEST\n\nQuelle: Better Call HENK Beta Landing Page (Test)'
     }
 
     try:
@@ -116,6 +115,37 @@ def test_pipedrive_connection():
         else:
             print(f"❌ Fehler beim Erstellen des Leads: {lead_response.status_code}")
             print(f"   Response: {lead_response.text}")
+            return False
+    except Exception as e:
+        print(f"❌ Fehler: {str(e)}")
+        return False
+
+    print()
+
+    # Test 4: Create note for the lead
+    print("Test 4: Test-Note für Lead erstellen...")
+    test_note_data = {
+        'content': 'Use Case: TEST\n\nQuelle: Better Call HENK Beta Landing Page (Test)',
+        'lead_id': lead_id,
+        'pinned_to_lead_flag': 1
+    }
+
+    try:
+        note_response = requests.post(
+            f'{base_url}/notes',
+            params=params,
+            json=test_note_data,
+            timeout=10
+        )
+
+        if note_response.ok:
+            note_data = note_response.json().get('data', {})
+            print(f"✓ Test-Note erstellt!")
+            print(f"  ID: {note_data.get('id')}")
+            print(f"  Content: {note_data.get('content')[:50]}...")
+        else:
+            print(f"❌ Fehler beim Erstellen der Note: {note_response.status_code}")
+            print(f"   Response: {note_response.text}")
             return False
     except Exception as e:
         print(f"❌ Fehler: {str(e)}")

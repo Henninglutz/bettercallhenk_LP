@@ -50,12 +50,6 @@ def send_to_pipedrive(data):
             'person_id': person_id,
         }
 
-        # Add use case as note if provided
-        if data.get('usecase'):
-            lead_data['note'] = f"Use Case: {data.get('usecase')}\n\nQuelle: Better Call HENK Beta Landing Page"
-        else:
-            lead_data['note'] = 'Quelle: Better Call HENK Beta Landing Page'
-
         lead_response = requests.post(
             f'{base_url}/leads',
             params=params,
@@ -63,12 +57,35 @@ def send_to_pipedrive(data):
             timeout=10
         )
 
-        if lead_response.ok:
-            print(f"✓ Pipedrive Lead created for {data.get('email')}")
-            return True
-        else:
+        if not lead_response.ok:
             print(f"Pipedrive Lead Error: {lead_response.status_code}")
             return False
+
+        lead_id = lead_response.json().get('data', {}).get('id')
+
+        # Step 3: Create Note for the Lead (note field is deprecated in Leads API)
+        note_content = f"Use Case: {data.get('usecase')}\n\nQuelle: Better Call HENK Beta Landing Page" if data.get('usecase') else 'Quelle: Better Call HENK Beta Landing Page'
+
+        note_data = {
+            'content': note_content,
+            'lead_id': lead_id,
+            'pinned_to_lead_flag': 1
+        }
+
+        note_response = requests.post(
+            f'{base_url}/notes',
+            params=params,
+            json=note_data,
+            timeout=10
+        )
+
+        if note_response.ok:
+            print(f"✓ Pipedrive Lead + Note created for {data.get('email')}")
+            return True
+        else:
+            print(f"⚠ Lead created but Note failed: {note_response.status_code}")
+            # Lead is created, so we still return True
+            return True
 
     except Exception as e:
         print(f"Pipedrive Error: {str(e)}")
