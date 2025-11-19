@@ -39,7 +39,7 @@
       box-shadow:0 30px 80px rgba(0,0,0,.45);
       border:1px solid rgba(255,255,255,.08);
     }
-    .poster img{display:block;width:100%;height:520px;object-fit:cover;object-position:center}
+    .poster img{display:block;width:100%;height:auto;max-height:800px;object-fit:contain;object-position:center;background:#0f1b36}
     .poster .gradient{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,19,36,.0) 55%, rgba(12,19,36,.8) 100%)}
     .sticker{
       position:absolute;right:18px;top:18px;transform:rotate(-7deg);
@@ -54,8 +54,8 @@
     .m-list{margin:12px 0 0 0;padding:0 0 0 18px;color:#dbe3f1}
     .carousel{position:relative;margin-top:14px}
     .track{display:flex;gap:14px;overflow:hidden;scroll-behavior:smooth}
-    .slide{min-width:260px;height:180px;border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden}
-    .slide img{width:100%;height:100%;object-fit:cover}
+    .slide{min-width:260px;height:350px;border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden;background:#0f1b36;display:flex;align-items:center;justify-content:center}
+    .slide img{width:100%;height:100%;object-fit:contain}
     .c-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.15);color:#fff;width:38px;height:38px;border-radius:999px;display:grid;place-items:center;cursor:pointer}
     .c-btn:hover{background:rgba(0,0,0,.6)}
     .c-prev{left:-8px}.c-next{right:-8px}
@@ -92,7 +92,7 @@
   <main class="container">
     <!-- Poster Hero -->
     <div class="poster">
-      <img src="static/images/poster.jpg" alt="HENK – Agentenposter">
+      <img src="/static/images/poster.png" alt="HENK – Agentenposter">
       <div class="gradient"></div>
       <div class="sticker">COMING SOON!</div>
       <div class="hero-caption">
@@ -123,14 +123,34 @@
           <div class="badge">Mood & Styles</div>
         </div>
         <div class="carousel">
-          <button class="c-btn c-prev" onclick="scrollCarousel(-320)">‹</button>
-          <div class="track">
-            <div class="slide"><img src="static/images/wardrobe.jpg" alt="Garderobe"></div>
-            <div class="slide"><img src="static/images/poster.jpg" alt="Poster"></div>
-            <div class="slide"><img src="static/images/wardrobe.jpg" alt="Garderobe"></div>
-            <div class="slide"><img src="static/images/poster.jpg" alt="Poster"></div>
+          <button class="c-btn c-prev" onclick="scrollCarousel(-320, 'track1')">‹</button>
+          <div class="track" id="track1">
+            <div class="slide"><img src="/static/images/Slider1.png" alt="Style 1"></div>
+            <div class="slide"><img src="/static/images/slider2.png" alt="Style 2"></div>
+            <div class="slide"><img src="/static/images/slider3.png" alt="Style 3"></div>
+            <div class="slide"><img src="/static/images/slider4.png" alt="Style 4"></div>
           </div>
-          <button class="c-btn c-next" onclick="scrollCarousel(320)">›</button>
+          <button class="c-btn c-next" onclick="scrollCarousel(320, 'track1')">›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Produzierte Outfits Galerie -->
+    <section class="section">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <h2>Bereits produzierte Outfits</h2>
+          <div class="badge">Unsere Arbeiten</div>
+        </div>
+        <div class="carousel">
+          <button class="c-btn c-prev" onclick="scrollCarousel(-320, 'track2')">‹</button>
+          <div class="track" id="track2">
+            <div class="slide"><img src="/static/images/real-suits/Tepemen-19.jpg" alt="Outfit 1"></div>
+            <div class="slide"><img src="/static/images/real-suits/Tepemen-20.jpg" alt="Outfit 2"></div>
+            <div class="slide"><img src="/static/images/real-suits/Tepemen-21.jpg" alt="Outfit 3"></div>
+            <div class="slide"><img src="/static/images/real-suits/Tepemen-22.jpg" alt="Outfit 4"></div>
+          </div>
+          <button class="c-btn c-next" onclick="scrollCarousel(320, 'track2')">›</button>
         </div>
       </div>
     </section>
@@ -211,8 +231,8 @@
   </footer>
 
   <script>
-    function scrollCarousel(delta){
-      const track = document.querySelector('.track');
+    function scrollCarousel(delta, trackId){
+      const track = trackId ? document.getElementById(trackId) : document.querySelector('.track');
       if(track) track.scrollBy({left: delta, behavior:'smooth'});
     }
     async function submitLead(e){
