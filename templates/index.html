@@ -39,7 +39,7 @@
       box-shadow:0 30px 80px rgba(0,0,0,.45);
       border:1px solid rgba(255,255,255,.08);
     }
-    .poster img{display:block;width:100%;height:520px;object-fit:cover;object-position:center}
+    .poster img{display:block;width:100%;height:auto;max-height:800px;object-fit:contain;object-position:center;background:#0f1b36}
     .poster .gradient{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,19,36,.0) 55%, rgba(12,19,36,.8) 100%)}
     .sticker{
       position:absolute;right:18px;top:18px;transform:rotate(-7deg);
@@ -54,8 +54,8 @@
     .m-list{margin:12px 0 0 0;padding:0 0 0 18px;color:#dbe3f1}
     .carousel{position:relative;margin-top:14px}
     .track{display:flex;gap:14px;overflow:hidden;scroll-behavior:smooth}
-    .slide{min-width:260px;height:180px;border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden}
-    .slide img{width:100%;height:100%;object-fit:cover}
+    .slide{min-width:260px;height:350px;border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden;background:#0f1b36;display:flex;align-items:center;justify-content:center}
+    .slide img{width:100%;height:100%;object-fit:contain}
     .c-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.15);color:#fff;width:38px;height:38px;border-radius:999px;display:grid;place-items:center;cursor:pointer}
     .c-btn:hover{background:rgba(0,0,0,.6)}
     .c-prev{left:-8px}.c-next{right:-8px}

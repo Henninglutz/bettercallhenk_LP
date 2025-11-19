@@ -27,8 +27,8 @@ def send_to_pipedrive(data):
         # Step 1: Create Person in Pipedrive
         person_data = {
             'name': data.get('name') or data.get('email', 'Beta User'),
-            'email': [data.get('email')],
-            'phone': [data.get('whatsapp')]
+            'email': [{'value': data.get('email'), 'primary': True, 'label': 'work'}] if data.get('email') else [],
+            'phone': [{'value': data.get('whatsapp'), 'primary': True, 'label': 'mobile'}] if data.get('whatsapp') else []
         }
 
         person_response = requests.post(
@@ -48,13 +48,13 @@ def send_to_pipedrive(data):
         lead_data = {
             'title': f'Beta Anmeldung: {data.get("name") or data.get("email")}',
             'person_id': person_id,
-            'value': {'amount': 0, 'currency': 'EUR'},
-            'label_ids': [],  # Can be customized for "Beta 2025"
         }
 
         # Add use case as note if provided
         if data.get('usecase'):
-            lead_data['note'] = f"Use Case: {data.get('usecase')}"
+            lead_data['note'] = f"Use Case: {data.get('usecase')}\n\nQuelle: Better Call HENK Beta Landing Page"
+        else:
+            lead_data['note'] = 'Quelle: Better Call HENK Beta Landing Page'
 
         lead_response = requests.post(
             f'{base_url}/leads',
