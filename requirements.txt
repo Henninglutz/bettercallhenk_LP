@@ -20,7 +20,7 @@ sqlalchemy==2.0.23
 pgvector==0.2.4
 
 # Image Processing
-Pillow==10.1.0
+Pillow==10.4.0
 
 # Data Processing
 pandas==2.1.4
