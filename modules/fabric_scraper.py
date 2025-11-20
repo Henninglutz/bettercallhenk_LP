@@ -253,8 +253,14 @@ class FormensScraper:
                     return False
 
             logger.info("Navigating to stock page...")
-            await self.page.goto(config.FORMENS_STOCK_URL, wait_until="networkidle")
+            await self.page.goto(config.FORMENS_STOCK_URL, wait_until="load", timeout=60000)
             await self._random_delay()
+
+            # Wait for the fabric listings to be visible
+            try:
+                await self.page.wait_for_selector(".product-item, .fabric-item, .card", timeout=10000)
+            except:
+                logger.warning("Could not find standard fabric selectors, proceeding anyway")
 
             logger.info(f"Current URL: {self.page.url}")
             return True
