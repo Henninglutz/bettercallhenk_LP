@@ -5,7 +5,7 @@ Manages all configuration settings for the HENK fabric scraping and RAG integrat
 
 import os
 from typing import Optional
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, ConfigDict
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
@@ -74,9 +74,11 @@ class FabricConfig(BaseSettings):
     ENABLE_AUTO_UPDATE: bool = Field(default=False, env="ENABLE_AUTO_UPDATE")
     AUTO_UPDATE_INTERVAL_HOURS: int = 24
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = ConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore"  # Ignore extra fields from .env (allows coexistence with main HENK config)
+    )
 
     @field_validator("FABRIC_STORAGE_PATH", "FABRIC_IMAGE_STORAGE", "FABRIC_DATA_STORAGE")
     @classmethod
