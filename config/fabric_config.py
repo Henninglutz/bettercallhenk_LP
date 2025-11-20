@@ -5,7 +5,8 @@ Manages all configuration settings for the HENK fabric scraping and RAG integrat
 
 import os
 from typing import Optional
-from pydantic import BaseSettings, Field, validator
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -77,13 +78,15 @@ class FabricConfig(BaseSettings):
         env_file = ".env"
         case_sensitive = True
 
-    @validator("FABRIC_STORAGE_PATH", "FABRIC_IMAGE_STORAGE", "FABRIC_DATA_STORAGE")
+    @field_validator("FABRIC_STORAGE_PATH", "FABRIC_IMAGE_STORAGE", "FABRIC_DATA_STORAGE")
+    @classmethod
     def create_directories(cls, v):
         """Ensure storage directories exist"""
         os.makedirs(v, exist_ok=True)
         return v
 
-    @validator("DATABASE_URL")
+    @field_validator("DATABASE_URL")
+    @classmethod
     def validate_database_url(cls, v):
         """Validate database URL format"""
         if v and not v.startswith(("postgresql://", "postgres://")):

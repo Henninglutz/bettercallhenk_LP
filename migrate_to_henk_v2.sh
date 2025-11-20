@@ -88,6 +88,7 @@ numpy==1.26.2
 # Utilities
 tenacity==8.2.3
 pydantic==2.5.3
+pydantic-settings==2.1.0
 python-slugify==8.0.1
 DEPS_EOF
 
