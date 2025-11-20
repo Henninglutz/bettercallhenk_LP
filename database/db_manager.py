@@ -241,7 +241,7 @@ class DatabaseManager:
             embedding.chunk_type = chunk.chunk_type
             embedding.content = chunk.content
             embedding.embedding = chunk.embedding
-            embedding.metadata = chunk.metadata
+            embedding.embedding_metadata = chunk.metadata
 
             if not existing:
                 sess.add(embedding)

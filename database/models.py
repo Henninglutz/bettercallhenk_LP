@@ -189,7 +189,7 @@ class FabricEmbedding(Base):
     # Vector embedding (1536 dimensions for text-embedding-3-small)
     embedding = Column(Vector(1536))
 
-    metadata = Column(JSONB, default={})
+    embedding_metadata = Column(JSONB, default={})
 
     created_at = Column(TIMESTAMP(timezone=True), default=datetime.utcnow)
     updated_at = Column(TIMESTAMP(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -207,7 +207,7 @@ class FabricEmbedding(Base):
             'chunk_id': self.chunk_id,
             'chunk_type': self.chunk_type,
             'content': self.content,
-            'metadata': self.metadata,
+            'embedding_metadata': self.embedding_metadata,
             'embedding': self.embedding.tolist() if self.embedding else None
         }
 

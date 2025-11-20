@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS fabric_embeddings (
     embedding vector(1536),
 
     -- Chunk metadata
-    metadata JSONB DEFAULT '{}'::jsonb,
+    embedding_metadata JSONB DEFAULT '{}'::jsonb,
 
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
