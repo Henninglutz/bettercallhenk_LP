@@ -47,6 +47,7 @@ class CSVFabricData:
     produkttyp: str = ""
     mto: str = ""
     preskat: str = ""
+    fabric_img: str = ""  # Direct image URL from CSV
 
 
 class FabricCSVImporter:
@@ -70,7 +71,8 @@ class FabricCSVImporter:
         'Eigenschaften': 'eigenschaften',
         'Katalog': 'katalog',
         'MTO': 'mto',
-        'Preiskat': 'preskat'  # Fixed: Preiskat not Preskat
+        'Preiskat': 'preskat',
+        'fabric_img': 'fabric_img'  # Direct image URL from CSV
     }
 
     # Category mapping based on Produkttyp
@@ -177,7 +179,8 @@ class FabricCSVImporter:
                             katalog=fabric_data.get('katalog', ''),
                             produkttyp=fabric_data.get('produkttyp', ''),
                             mto=fabric_data.get('mto', ''),
-                            preskat=fabric_data.get('preskat', '')
+                            preskat=fabric_data.get('preskat', ''),
+                            fabric_img=fabric_data.get('fabric_img', '')
                         )
 
                         if fabric.fabric_code:  # Only add if we have a code
@@ -198,6 +201,11 @@ class FabricCSVImporter:
         """Construct potential image URLs for a fabric"""
         urls = []
 
+        # PRIORITY 1: Use direct image URL from CSV if available
+        if fabric.fabric_img and fabric.fabric_img.strip():
+            urls.append(fabric.fabric_img.strip())
+
+        # PRIORITY 2: Construct URLs from fabric code as fallback
         # Extract fabric name from code
         fabric_name = self.extract_fabric_name(fabric.fabric_code)
         if not fabric_name:
