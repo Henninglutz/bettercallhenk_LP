@@ -124,15 +124,27 @@ class FabricCSVImporter:
         return None
 
     def extract_fabric_name(self, fabric_code: str) -> str:
-        """Extract fabric name from code (e.g., 'VITALE' from '695.401/18')"""
-        # Try to extract letters from the code
+        """Extract fabric name from code for display purposes
+        Examples:
+        - 'VITALE BARBERIS' -> 'VITALE'
+        - '695.401/18' -> '' (no letters, will use supplier)
+        """
         import re
-        # Pattern: extract uppercase letters that might be the fabric name
-        # For codes like "586.861/122" we might not have a name, use supplier
+        # Extract uppercase letters that might be the fabric name
         letters = re.findall(r'[A-Z]+', fabric_code)
         if letters:
             return letters[0]
         return ""
+
+    def convert_fabric_code_for_url(self, fabric_code: str) -> str:
+        """Convert fabric code to image URL format
+        Examples:
+        - '695.401/18' -> '695.401_18'
+        - '65C4034' -> '65C4034'
+        - 'VITALE' -> 'VITALE'
+        """
+        # Replace slashes with underscores for URL compatibility
+        return fabric_code.replace('/', '_')
 
     def map_category(self, produkttyp: str) -> str:
         """Map Produkttyp to Formens category"""
@@ -205,16 +217,16 @@ class FabricCSVImporter:
         if fabric.fabric_img and fabric.fabric_img.strip():
             urls.append(fabric.fabric_img.strip())
 
-        # PRIORITY 2: Construct URLs from fabric code as fallback
-        # Extract fabric name from code
-        fabric_name = self.extract_fabric_name(fabric.fabric_code)
-        if not fabric_name:
-            fabric_name = fabric.fabric_code
+        # PRIORITY 2: Try b2b2.formens.ro/img/tissu-veste/ path (most common)
+        fabric_code_url = self.convert_fabric_code_for_url(fabric.fabric_code)
+        direct_img_url = f"https://b2b2.formens.ro/img/tissu-veste/{fabric_code_url}.jpg"
+        urls.append(direct_img_url)
 
+        # PRIORITY 3: Construct URLs from documente/marketing path as fallback
         # Try fabric category first
         url = self.IMAGE_URL_PATTERN.format(
             category=fabric.category,
-            code=fabric_name
+            code=fabric_code_url
         )
         urls.append(url)
 
@@ -223,7 +235,7 @@ class FabricCSVImporter:
             if category != fabric.category:
                 url = self.IMAGE_URL_PATTERN.format(
                     category=category,
-                    code=fabric_name
+                    code=fabric_code_url
                 )
                 urls.append(url)
 
