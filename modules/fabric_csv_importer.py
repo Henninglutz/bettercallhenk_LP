@@ -70,7 +70,7 @@ class FabricCSVImporter:
         'Eigenschaften': 'eigenschaften',
         'Katalog': 'katalog',
         'MTO': 'mto',
-        'Preskat': 'preskat'
+        'Preiskat': 'preskat'  # Fixed: Preiskat not Preskat
     }
 
     # Category mapping based on Produkttyp
@@ -143,7 +143,7 @@ class FabricCSVImporter:
 
         try:
             with open(csv_path, 'r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
+                reader = csv.DictReader(f, delimiter=';')  # Formens CSV uses semicolon
 
                 for row_num, row in enumerate(reader, start=2):
                     try:
