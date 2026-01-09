@@ -105,57 +105,66 @@ class DatabaseManager:
         finally:
             session.close()
 
-    def save_fabric(self, fabric_data: FabricData, session: Optional[Session] = None) -> Fabric:
+    def save_fabric(self, fabric_data, session: Optional[Session] = None) -> Fabric:
         """
         Save fabric data to database.
 
         Args:
-            fabric_data: FabricData object
+            fabric_data: FabricData object or dict
             session: Optional existing session
 
         Returns:
             Fabric database model
         """
+        # Support both dict and object
+        def get_value(obj, key, default=None):
+            if isinstance(obj, dict):
+                return obj.get(key, default)
+            return getattr(obj, key, default)
+
         def _save(sess: Session) -> Fabric:
+            fabric_code = get_value(fabric_data, 'fabric_code')
+
             # Check if fabric already exists
-            existing = sess.query(Fabric).filter_by(fabric_code=fabric_data.fabric_code).first()
+            existing = sess.query(Fabric).filter_by(fabric_code=fabric_code).first()
 
             if existing:
                 # Update existing
-                logger.info(f"Updating existing fabric {fabric_data.fabric_code}")
+                logger.info(f"Updating existing fabric {fabric_code}")
                 fabric = existing
             else:
                 # Create new
-                logger.info(f"Creating new fabric {fabric_data.fabric_code}")
+                logger.info(f"Creating new fabric {fabric_code}")
                 fabric = Fabric()
 
             # Update fields
-            fabric.fabric_code = fabric_data.fabric_code
-            fabric.name = fabric_data.name
-            fabric.composition = fabric_data.composition
-            fabric.weight = fabric_data.weight
-            fabric.color = fabric_data.color
-            fabric.pattern = fabric_data.pattern
-            fabric.price_category = fabric_data.price_category
-            fabric.stock_status = fabric_data.stock_status
-            fabric.supplier = fabric_data.supplier
-            fabric.origin = fabric_data.origin
-            fabric.description = fabric_data.description
-            fabric.care_instructions = fabric_data.care_instructions
-            fabric.category = fabric_data.category
-            fabric.scrape_date = fabric_data.scrape_date
-            fabric.additional_metadata = fabric_data.additional_metadata or {}
+            fabric.fabric_code = fabric_code
+            fabric.name = get_value(fabric_data, 'name')
+            fabric.composition = get_value(fabric_data, 'composition')
+            fabric.weight = get_value(fabric_data, 'weight')
+            fabric.color = get_value(fabric_data, 'color')
+            fabric.pattern = get_value(fabric_data, 'pattern')
+            fabric.price_category = get_value(fabric_data, 'price_category')
+            fabric.stock_status = get_value(fabric_data, 'stock_status')
+            fabric.supplier = get_value(fabric_data, 'supplier')
+            fabric.origin = get_value(fabric_data, 'origin')
+            fabric.description = get_value(fabric_data, 'description')
+            fabric.care_instructions = get_value(fabric_data, 'care_instructions')
+            fabric.category = get_value(fabric_data, 'category')
+            fabric.scrape_date = get_value(fabric_data, 'scrape_date')
+            fabric.additional_metadata = get_value(fabric_data, 'additional_metadata') or {}
 
             if not existing:
                 sess.add(fabric)
                 sess.flush()  # Get ID
 
             # Save seasons
-            if fabric_data.season:
+            seasons = get_value(fabric_data, 'season') or get_value(fabric_data, 'seasons')
+            if seasons:
                 # Remove old seasons
                 sess.query(FabricSeason).filter_by(fabric_id=fabric.id).delete()
 
-                for season in fabric_data.season:
+                for season in seasons:
                     fabric_season = FabricSeason(
                         fabric_id=fabric.id,
                         season=season
@@ -163,12 +172,14 @@ class DatabaseManager:
                     sess.add(fabric_season)
 
             # Save images
-            if fabric_data.local_image_paths:
+            local_paths = get_value(fabric_data, 'local_image_paths') or get_value(fabric_data, 'images')
+            if local_paths:
                 # Remove old images
                 sess.query(FabricImage).filter_by(fabric_id=fabric.id).delete()
 
-                for i, local_path in enumerate(fabric_data.local_image_paths):
-                    image_url = fabric_data.image_urls[i] if i < len(fabric_data.image_urls) else None
+                image_urls = get_value(fabric_data, 'image_urls', [])
+                for i, local_path in enumerate(local_paths):
+                    image_url = image_urls[i] if i < len(image_urls) else None
 
                     fabric_image = FabricImage(
                         fabric_id=fabric.id,
@@ -241,7 +252,7 @@ class DatabaseManager:
             embedding.chunk_type = chunk.chunk_type
             embedding.content = chunk.content
             embedding.embedding = chunk.embedding
-            embedding.metadata = chunk.metadata
+            embedding.embedding_metadata = chunk.metadata
 
             if not existing:
                 sess.add(embedding)

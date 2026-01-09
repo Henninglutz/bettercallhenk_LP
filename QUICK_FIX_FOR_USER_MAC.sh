@@ -1,11 +1,52 @@
+#!/bin/bash
+# Quick Fix for Henk Repo - Pydantic v2 Compatibility
+# Run this in your henk.bettercallhenk.de directory on your Mac
+
+set -e
+
+echo "=========================================="
+echo "HENK Fabric Module - Pydantic v2 Fix"
+echo "=========================================="
+echo ""
+
+# Check we're in the right directory
+if [ ! -f "run_fabric_pipeline.py" ]; then
+    echo "❌ Error: run_fabric_pipeline.py not found!"
+    echo "Please run this script from henk.bettercallhenk.de directory"
+    exit 1
+fi
+
+echo "✅ In henk.bettercallhenk.de directory"
+echo ""
+
+# Step 1: Install pydantic-settings
+echo "Step 1/3: Installing pydantic-settings..."
+pip install pydantic-settings>=2.0.0
+echo "✅ pydantic-settings installed"
+echo ""
+
+# Step 2: Backup old config
+echo "Step 2/3: Backing up old config..."
+if [ -f "config/fabric_config.py" ]; then
+    cp config/fabric_config.py config/fabric_config.py.backup
+    echo "✅ Backup created: config/fabric_config.py.backup"
+else
+    echo "⚠️  No existing config found - will create new one"
+fi
+echo ""
+
+# Step 3: Update config with Pydantic v2 imports
+echo "Step 3/3: Updating config/fabric_config.py..."
+
+cat > config/fabric_config.py << 'EOF'
 """
-Fabric Module Configuration
+Fabric Module Configuration - Pydantic v2 Compatible
 Manages all configuration settings for the HENK fabric scraping and RAG integration.
 """
 
 import os
 from typing import Optional
-from pydantic import Field, field_validator, ConfigDict
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
@@ -25,12 +66,12 @@ class FabricConfig(BaseSettings):
 
     # Scraping Settings
     SCRAPER_USER_AGENT: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    SCRAPER_DELAY_MIN: float = 1.0  # Minimum delay between requests (seconds)
-    SCRAPER_DELAY_MAX: float = 3.0  # Maximum delay between requests (seconds)
-    SCRAPER_TIMEOUT: int = 30  # Request timeout (seconds)
+    SCRAPER_DELAY_MIN: float = 1.0
+    SCRAPER_DELAY_MAX: float = 3.0
+    SCRAPER_TIMEOUT: int = 30
     SCRAPER_MAX_RETRIES: int = 3
-    SCRAPER_BATCH_SIZE: int = 10  # Number of fabrics to process in parallel
-    SCRAPER_HEADLESS: bool = True  # Run browser in headless mode
+    SCRAPER_BATCH_SIZE: int = 10
+    SCRAPER_HEADLESS: bool = True
 
     # Storage Settings
     FABRIC_STORAGE_PATH: str = Field(default="./storage/fabrics", env="FABRIC_STORAGE_PATH")
@@ -52,10 +93,10 @@ class FabricConfig(BaseSettings):
     OPENAI_DALLE_QUALITY: str = "standard"
 
     # RAG Settings
-    RAG_CHUNK_SIZE: int = 500  # Characters per chunk
-    RAG_CHUNK_OVERLAP: int = 50  # Overlap between chunks
-    RAG_TOP_K_RESULTS: int = 5  # Number of similar fabrics to retrieve
-    RAG_SIMILARITY_THRESHOLD: float = 0.7  # Minimum similarity score
+    RAG_CHUNK_SIZE: int = 500
+    RAG_CHUNK_OVERLAP: int = 50
+    RAG_TOP_K_RESULTS: int = 5
+    RAG_SIMILARITY_THRESHOLD: float = 0.7
 
     # Processing Settings
     IMAGE_MAX_WIDTH: int = 2048
@@ -74,11 +115,9 @@ class FabricConfig(BaseSettings):
     ENABLE_AUTO_UPDATE: bool = Field(default=False, env="ENABLE_AUTO_UPDATE")
     AUTO_UPDATE_INTERVAL_HOURS: int = 24
 
-    model_config = ConfigDict(
-        env_file=".env",
-        case_sensitive=True,
-        extra="ignore"  # Ignore extra fields from .env (allows coexistence with main HENK config)
-    )
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
 
     @field_validator("FABRIC_STORAGE_PATH", "FABRIC_IMAGE_STORAGE", "FABRIC_DATA_STORAGE")
     @classmethod
@@ -171,3 +210,38 @@ SEASONS_MONTHS = {
     "fall": [9, 10, 11],
     "winter": [12, 1, 2]
 }
+EOF
+
+echo "✅ config/fabric_config.py updated"
+echo ""
+
+# Step 4: Verify installation
+echo "=========================================="
+echo "Verifying Installation..."
+echo "=========================================="
+echo ""
+
+echo "Test 1: pydantic-settings import..."
+python -c "from pydantic_settings import BaseSettings; print('✅ pydantic-settings OK')" || echo "❌ Failed"
+
+echo "Test 2: fabric_config import..."
+python -c "from config.fabric_config import config; print('✅ Config import OK')" || echo "❌ Failed"
+
+echo "Test 3: Check configuration..."
+python -c "
+from config.fabric_config import config
+print(f'✅ Database URL configured: {bool(config.DATABASE_URL)}')
+print(f'✅ OpenAI configured: {config.is_openai_configured()}')
+print(f'✅ Formens configured: {bool(config.FORMENS_USERNAME)}')
+" || echo "❌ Failed"
+
+echo ""
+echo "=========================================="
+echo "✅ Fix Complete!"
+echo "=========================================="
+echo ""
+echo "You can now run:"
+echo "  python run_fabric_pipeline.py"
+echo ""
+echo "This will scrape ALL fabrics from Formens (no test limit)"
+echo ""
