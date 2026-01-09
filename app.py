@@ -95,6 +95,18 @@ def send_to_pipedrive(data):
 def home():
     return render_template('index.html')
 
+@app.route('/impressum')
+def impressum():
+    return render_template('impressum.html')
+
+@app.route('/datenschutz')
+def datenschutz():
+    return render_template('datenschutz.html')
+
+@app.route('/agb')
+def agb():
+    return render_template('agb.html')
+
 @app.post('/api/subscribe')
 def subscribe():
     payload = request.get_json(force=True, silent=True) or {}
