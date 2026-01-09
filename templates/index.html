@@ -203,16 +203,23 @@
           </ul>
         </div>
 
-        <div style="margin-top:10px">
-          <div class="pipedriveWebForms" data-pd-webforms="https://webforms.pipedrive.com/f/2Xgr5U657aFmCYcBV75vnAsI9b58mkwBvmg4cYJDfpu2MZXFL0xFtoKCT7gSuQKfp"><script src="https://webforms.pipedrive.com/f/loader"></script></div>
-
-          <div class="small" style="margin-top:12px">Kein Spam. Abmeldung jederzeit möglich.</div>
-          <div class="reviews">
-            <div class="stars">★★★★★</div>
-            <div class="badge">Ausgezeichnet auf Google</div>
-            <a class="small" href="https://g.page/r/CRO3nFKddaWSEBE/review" target="_blank" rel="noopener">Bewertungen ansehen</a>
+        <form onsubmit="return submitLead(event)" style="margin-top:10px" class="lead">
+          <div class="grid-2">
+            <input class="input" type="text" name="name" placeholder="Name">
+            <input class="input" type="email" name="email" placeholder="E-Mail" required>
+            <input class="input" type="tel" name="whatsapp" placeholder="WhatsApp-Nummer (+49…)" required>
+            <input class="input" type="text" name="usecase" placeholder="Wofür? (z. B. Hochzeit, Business)">
           </div>
-        </div>
+          <div>
+            <button class="button" type="submit">Platz sichern</button>
+            <div class="small" style="margin-top:6px">Kein Spam. Abmeldung jederzeit möglich.</div>
+            <div class="reviews">
+              <div class="stars">★★★★★</div>
+              <div class="badge">Ausgezeichnet auf Google</div>
+              <a class="small" href="https://g.page/r/CRO3nFKddaWSEBE/review" target="_blank" rel="noopener">Bewertungen ansehen</a>
+            </div>
+          </div>
+        </form>
 
         <div class="legal">
           <a href="/impressum">Impressum</a>
@@ -228,6 +235,19 @@
     function scrollCarousel(delta, trackId){
       const track = trackId ? document.getElementById(trackId) : document.querySelector('.track');
       if(track) track.scrollBy({left: delta, behavior:'smooth'});
+    }
+    async function submitLead(e){
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      if(!data.email || !data.whatsapp){ alert('Bitte E-Mail und WhatsApp-Nummer angeben.'); return false; }
+      try{
+        const res = await fetch('/api/subscribe', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+        if(res.ok){ e.target.reset(); alert('Danke! Du bist für die ersten 100 vorgemerkt.'); }
+        else{ window.location.href='mailto:henk@bettercallhenk.de?subject=Beta%20Anmeldung&body='+encodeURIComponent(JSON.stringify(data,null,2)); }
+      }catch(_){
+        window.location.href='mailto:beta@bettercallhenk.de?subject=Beta%20Anmeldung&body='+encodeURIComponent(JSON.stringify(data,null,2));
+      }
+      return false;
     }
   </script>
 </body>
