@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Impressum – Better Call HENK</title>
+  <style>
+    :root{
+      --ink:#0f172a;
+      --bg:#0c1324;
+      --bg-soft:#0f1b36;
+      --accent:#fcd34d;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+      color:var(--text);
+      background:linear-gradient(180deg,#111b34 0%, #0b1326 60%, #0b1326 100%);
+      min-height:100vh;
+    }
+    .container{max-width:900px;margin:0 auto;padding:20px}
+    .header{
+      position:sticky;top:0;z-index:40;
+      backdrop-filter:saturate(120%) blur(10px);
+      background:rgba(12,19,36,.6);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .header-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+    .brand{display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit}
+    .brand-badge{width:32px;height:32px;border-radius:10px;background:var(--accent);}
+    .brand-name{font-weight:700;letter-spacing:.2px}
+    .card{background:rgba(15,27,54,.45);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;margin-top:30px}
+    h1{font-size:36px;margin:0 0 20px;color:#fff}
+    h2{font-size:22px;margin:30px 0 12px;color:#fff}
+    p{line-height:1.7;color:#d1d5db;margin:10px 0}
+    .contact-info{background:rgba(252,211,77,.08);border:1px solid rgba(252,211,77,.25);border-radius:12px;padding:16px;margin:20px 0}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="brand">
+        <div class="brand-badge"></div>
+        <div class="brand-name">Better Call HENK</div>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h1>Impressum</h1>
+
+      <h2>Angaben gemäß § 5 TMG</h2>
+      <p>
+        [Firmenname / Name des Inhabers]<br>
+        [Straße und Hausnummer]<br>
+        [PLZ und Ort]
+      </p>
+
+      <h2>Kontakt</h2>
+      <div class="contact-info">
+        <p style="margin:0">
+          <strong>E-Mail:</strong> henk@bettercallhenk.de<br>
+          <strong>Telefon:</strong> [Telefonnummer]
+        </p>
+      </div>
+
+      <h2>Vertreten durch</h2>
+      <p>[Name des Geschäftsführers / Inhabers]</p>
+
+      <h2>Umsatzsteuer-ID</h2>
+      <p>
+        Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG:<br>
+        [USt-IdNr.]
+      </p>
+
+      <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+      <p>
+        [Name]<br>
+        [Adresse]
+      </p>
+
+      <h2>Hinweis auf EU-Streitschlichtung</h2>
+      <p>
+        Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:
+        <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener" style="color:#fcd34d">https://ec.europa.eu/consumers/odr</a>
+      </p>
+      <p>Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>
+
+      <h2>Hinweis zur Verantwortlichkeit</h2>
+      <p>
+        Wir sind für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.
+        Wir sind jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen.
+      </p>
+
+      <p style="margin-top:40px;text-align:center">
+        <a href="/" style="color:#fcd34d;text-decoration:none">← Zurück zur Startseite</a>
+      </p>
+    </div>
+  </main>
+</body>
+</html>
